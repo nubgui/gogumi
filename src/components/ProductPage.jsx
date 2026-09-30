@@ -246,7 +246,7 @@ export default function ProductPage({
                 <div className="relative w-full aspect-square max-w-[280px] sm:max-w-[340px] md:max-w-[390px] flex items-center justify-center group cursor-pointer">
                   <SafeImage
                     src={currentColor.imgFront}
-                    alt={`Zapatilla GO ${currentColor.name} - Frente`}
+                    alt={`Zapatillas de bebe ergonomicas Go Gumi ${currentColor.name} - Vista Frontal`}
                     className="w-full h-auto object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
@@ -263,7 +263,7 @@ export default function ProductPage({
                 <div className="relative w-full aspect-square max-w-[280px] sm:max-w-[340px] md:max-w-[390px] flex items-center justify-center group cursor-pointer">
                   <SafeImage
                     src={currentColor.imgBack}
-                    alt={`Zapatilla GO ${currentColor.name} - Posterior`}
+                    alt={`Suela antideslizante zero drop en zapatillas de bebe ${currentColor.name} - Vista Posterior`}
                     className="w-full h-auto object-contain drop-shadow-2xl group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
@@ -289,10 +289,15 @@ export default function ProductPage({
               
               {/* TÍTULO Y PRECIO */}
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="px-2.5 py-0.5 rounded-full bg-yellow-300/30 border border-yellow-200/60 text-yellow-100 text-[10px] font-bold uppercase tracking-wider">
                     Preventa Exclusiva
                   </span>
+                  {currentColor.id === 'rosa' && (
+                    <span className="px-2.5 py-0.5 rounded-full bg-pink-500/80 border border-pink-300/80 text-white text-[10px] font-bold uppercase tracking-wider shadow-xs animate-pulse">
+                      Destacado en zapatos para niñas
+                    </span>
+                  )}
                   <div className="flex items-center gap-1 text-yellow-200 text-xs font-bold">
                     <Star className="w-3.5 h-3.5 fill-yellow-300 text-yellow-300" />
                     <span>4.9 (128 reseñas)</span>
@@ -301,7 +306,7 @@ export default function ProductPage({
 
                 <div className="flex items-center justify-between gap-2 mt-1">
                   <h1 className="font-bubbly text-2xl sm:text-3xl font-extrabold text-white drop-shadow-sm">
-                    GO Barefoot ErgoFlex
+                    Zapatillas de Bebé Ergonómicas Go Gumi
                   </h1>
                   
                   {/* BOTÓN "i" DE INFORMACIÓN */}

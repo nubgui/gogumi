@@ -65,6 +65,8 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
       tag: 'Playa y charcos',
       imgFront: '/assets/azul_frente_webp.webp',
       imgBack: '/assets/azul_atras_webp.webp',
+      altFront: 'Zapatillas de bebe ergonómicas color Azul Océano con puntera barefoot Go Gumi',
+      altBack: 'Suela antideslizante de zapatillas de bebe Go Gumi Azul Océano',
     },
     {
       id: 'rosa',
@@ -73,6 +75,8 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
       tag: 'Dulce y activo',
       imgFront: '/assets/rosa_frente_webp.webp',
       imgBack: '/assets/rosa_atras_webp.webp',
+      altFront: 'Zapatos para niñas ergonómicos y flexibles color Rosa Pastel',
+      altBack: 'Suela zero drop de zapatos para niñas Go Gumi Rosa Pastel',
     },
     {
       id: 'verde',
@@ -81,6 +85,8 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
       tag: 'Naturaleza y campo',
       imgFront: '/assets/verde_frente_webp.webp',
       imgBack: '/assets/verde_atras_webp.webp',
+      altFront: 'Zapatillas para bebes de 1 año todoterreno color Verde Salvia',
+      altBack: 'Tracción y flexibilidad en zapatillas para bebes de 1 año Verde Salvia',
     },
     {
       id: 'naranja',
@@ -89,6 +95,8 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
       tag: 'Energía y sol',
       imgFront: '/assets/naranja_frente_webp.webp',
       imgBack: '/assets/naranja_atras_webp.webp',
+      altFront: 'Zapatos para bebes que empiezan a caminar color Naranja Safari',
+      altBack: 'Horma ancha y libre en zapatos para bebes que empiezan a caminar Naranja',
     },
     {
       id: 'morado',
@@ -97,6 +105,8 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
       tag: 'Edición GO especial',
       imgFront: '/assets/morado_frente_webp.webp',
       imgBack: '/assets/morado_atras_webp.webp',
+      altFront: 'Zapatitos de bebe ligeros estilo minimox color Morado Gummy',
+      altBack: 'Suela de grafeno en zapatitos de bebe color Morado Gummy',
     },
     {
       id: 'gris',
@@ -105,6 +115,8 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
       tag: 'Elegante y neutral',
       imgFront: '/assets/gris_frente_webp.webp',
       imgBack: '/assets/gris_atras_webp.webp',
+      altFront: 'Zapatos para bebe todoterreno antideslizantes color Gris Urbano',
+      altBack: 'Vista posterior anatómica en zapatos para bebe color Gris Urbano',
     },
   ];
 
@@ -217,6 +229,10 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
         background: 'linear-gradient(180deg, #64C7F3 0%, #76CFDD 50%, #9CD4D7 100%)'
       }}
     >
+      {/* ENCABEZADO H1 SEO ON-PAGE: Palabras clave Short-tail y Mid-tail para indexación */}
+      <h1 className="sr-only">
+        Zapatos para Bebé y Zapatillas Ergonómicas Todo Terreno | Go Gumi Minimox
+      </h1>
       {/* CAPA: NUBE IZQUIERDA (Ancho 540px en móvil, ampliada en PC) */}
       <motion.div 
         animate={{ 
@@ -421,7 +437,7 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
                       >
                         <SafeImage
                           src={variant.imgFront}
-                          alt={`Zapatilla GO ${variant.name} - Frente`}
+                          alt={variant.altFront || `Zapatilla GO ${variant.name} - Frente`}
                           className="w-full h-auto object-contain pointer-events-none"
                           fallback={
                             <div className="relative w-full aspect-[4/3] flex items-center justify-center">
@@ -446,7 +462,7 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
                       >
                         <SafeImage
                           src={variant.imgBack}
-                          alt={`Zapatilla GO ${variant.name} - Vista Posterior`}
+                          alt={variant.altBack || `Zapatilla GO ${variant.name} - Vista Posterior`}
                           className="w-full h-auto object-contain pointer-events-none"
                           fallback={
                             <div className="relative w-full h-full flex items-center justify-center">
