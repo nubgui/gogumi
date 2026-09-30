@@ -188,7 +188,7 @@ export default function ShoeStudio({ onSelectModel }) {
                       }}
                     >
                       <SafeImage
-                        src="/assets/zapatilla.png"
+                        src="/assets/zapatilla_webp.webp"
                         alt={`Zapatilla GO ${currentColor.name}`}
                         className="w-full h-auto max-h-[260px] object-contain drop-shadow-[0_16px_28px_rgba(0,0,0,0.22)]"
                         fallback={

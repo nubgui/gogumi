@@ -29,48 +29,48 @@ export default function ProductPage({
       name: 'Azul Océano',
       hex: '#3B82F6',
       tag: 'Playa y charcos',
-      imgFront: '/assets/azul_frente.png',
-      imgBack: '/assets/azul_atras.png',
+      imgFront: '/assets/azul_frente_webp.webp',
+      imgBack: '/assets/azul_atras_webp.webp',
     },
     {
       id: 'rosa',
       name: 'Rosa Pastel',
       hex: '#F472B6',
       tag: 'Dulce y activo',
-      imgFront: '/assets/rosa_frente.png',
-      imgBack: '/assets/rosa_atras.png',
+      imgFront: '/assets/rosa_frente_webp.webp',
+      imgBack: '/assets/rosa_atras_webp.webp',
     },
     {
       id: 'verde',
       name: 'Verde Salvia',
       hex: '#34D399',
       tag: 'Naturaleza y campo',
-      imgFront: '/assets/verde_frente.png',
-      imgBack: '/assets/verde_atras.png',
+      imgFront: '/assets/verde_frente_webp.webp',
+      imgBack: '/assets/verde_atras_webp.webp',
     },
     {
       id: 'naranja',
       name: 'Naranja Safari',
       hex: '#FB923C',
       tag: 'Energía y sol',
-      imgFront: '/assets/naranja_frente.png',
-      imgBack: '/assets/naranja_atras.png',
+      imgFront: '/assets/naranja_frente_webp.webp',
+      imgBack: '/assets/naranja_atras_webp.webp',
     },
     {
       id: 'morado',
       name: 'Morado Gummy',
       hex: '#A855F7',
       tag: 'Edición GO especial',
-      imgFront: '/assets/morado_frente.png',
-      imgBack: '/assets/morado_atras.png',
+      imgFront: '/assets/morado_frente_webp.webp',
+      imgBack: '/assets/morado_atras_webp.webp',
     },
     {
       id: 'gris',
       name: 'Gris Urbano',
       hex: '#94A3B8',
       tag: 'Elegante y neutral',
-      imgFront: '/assets/gris_frente.png',
-      imgBack: '/assets/gris_atras.png',
+      imgFront: '/assets/gris_frente_webp.webp',
+      imgBack: '/assets/gris_atras_webp.webp',
     },
   ];
 
@@ -160,9 +160,10 @@ export default function ProductPage({
       {/* CAPA: SUELO ESTÁTICO DE FONDO AL 100% DE ANCHO Y 100% DE OPACIDAD SIN RECORTES */}
       <div className="absolute bottom-0 left-0 right-0 w-full min-w-full pointer-events-none z-0 flex items-end justify-center overflow-hidden">
         <SafeImage
-          src="/assets/suelo.png"
+          src="/assets/suelo_webp.webp"
           alt="Terreno y rocas de fondo"
           className="w-full min-w-full h-auto object-cover -scale-x-100 drop-shadow-2xl"
+          style={{ transform: 'translate(0px, 300px)' }}
           fallback={
             <div className="w-full h-48 bg-gradient-to-t from-emerald-950/80 to-transparent" />
           }
@@ -183,7 +184,7 @@ export default function ProductPage({
           <img 
             src="/assets/logo-go.png" 
             alt="Logo GO" 
-            className="h-8 sm:h-9 w-auto object-contain drop-shadow-sm" 
+            className="h-8 sm:h-9 w-auto object-contain" 
           />
         </div>
 
@@ -464,11 +465,6 @@ export default function ProductPage({
         </div>
 
       </main>
-
-      {/* FOOTER SENCILLO */}
-      <footer className="w-full py-4 text-center text-xs text-white/80 border-t border-white/30 mt-8 bg-black/5 backdrop-blur-sm relative z-10">
-        <p>© 2026 GO / Gogumi — Calzado Infantil Ergonómico. Proyecto de Estrategias Digitales (UTP).</p>
-      </footer>
 
       {/* ============================================================== */}
       {/* MODAL DE INFORMACIÓN (3 BENEFICIOS CLAVE) */}

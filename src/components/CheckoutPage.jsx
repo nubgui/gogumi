@@ -26,7 +26,7 @@ export default function CheckoutPage({
     size: '21',
     price: 149,
     originalPrice: 189,
-    imgFront: '/assets/azul_frente.png',
+    imgFront: '/assets/azul_frente_webp.webp',
   },
   onBack,
   onFinish
@@ -122,7 +122,7 @@ export default function CheckoutPage({
           <img 
             src="/assets/logo-go.png" 
             alt="Logo GO" 
-            className="h-8 sm:h-9 w-auto object-contain drop-shadow-sm" 
+            className="h-8 sm:h-9 w-auto object-contain" 
           />
           <span className="hidden sm:inline font-bubbly text-xs font-bold text-sky-950 uppercase tracking-wider bg-white/40 px-2.5 py-0.5 rounded-md border border-white/60">
             Checkout Seguro
@@ -555,7 +555,7 @@ export default function CheckoutPage({
               <div className="flex items-center gap-3.5 pb-4 border-b border-white/30">
                 <div className="relative w-20 h-20 bg-white/40 rounded-2xl p-1.5 border border-white/70 flex items-center justify-center shrink-0 shadow-md">
                   <SafeImage
-                    src={orderItem.imgFront || '/assets/azul_frente.png'}
+                    src={orderItem.imgFront || '/assets/azul_frente_webp.webp'}
                     alt={orderItem.color}
                     className="w-full h-full object-contain"
                   />

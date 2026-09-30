@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence, motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
-import { Sparkles, Check, Layers, Footprints, Zap, X } from 'lucide-react';
+import { Sparkles, Check, Layers, Footprints, Zap, X, RotateCw } from 'lucide-react';
 import SafeImage from './SafeImage';
 
 export default function HeroSection({ onReserveClick, onColorChange, onProductClick }) {
@@ -16,6 +16,16 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
   // Estado de hover para mostrar la segunda imagen
   const [isHovered, setIsHovered] = useState(false);
 
+  // Estado de giro manual de imagen para móvil (en móvil no existe hover)
+  const [mobileFlipped, setMobileFlipped] = useState({});
+
+  const toggleMobileFlip = (index) => {
+    setMobileFlipped((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
+
   // Carrusel de Colores
   const [activeColorIndex, setActiveColorIndex] = useState(0);
 
@@ -25,9 +35,17 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
     typeof window !== 'undefined' ? Math.max(260, Math.round(window.innerWidth * 0.36)) : 480
   );
 
+  // Detección de dispositivo móvil / táctil sin hover para desacoplar el giro del hover
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined'
+      ? window.innerWidth < 640 || (window.matchMedia && !window.matchMedia('(hover: hover)').matches)
+      : false
+  );
+
   useEffect(() => {
     const updateSpacing = () => {
       const width = window.innerWidth;
+      setIsMobile(width < 640 || (window.matchMedia && !window.matchMedia('(hover: hover)').matches));
       // Con 36% a cada lado, la distancia total entre centros es 72% + anchos de zapatos = ~90% de la pantalla
       const targetSpacing = Math.max(260, Math.round(width * 0.36));
       setSpacing(targetSpacing);
@@ -43,48 +61,48 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
       name: 'Azul Océano',
       hex: '#3B82F6',
       tag: 'Playa y charcos',
-      imgFront: '/assets/azul_frente.png',
-      imgBack: '/assets/azul_atras.png',
+      imgFront: '/assets/azul_frente_webp.webp',
+      imgBack: '/assets/azul_atras_webp.webp',
     },
     {
       id: 'rosa',
       name: 'Rosa Pastel',
       hex: '#F472B6',
       tag: 'Dulce y activo',
-      imgFront: '/assets/rosa_frente.png',
-      imgBack: '/assets/rosa_atras.png',
+      imgFront: '/assets/rosa_frente_webp.webp',
+      imgBack: '/assets/rosa_atras_webp.webp',
     },
     {
       id: 'verde',
       name: 'Verde Salvia',
       hex: '#34D399',
       tag: 'Naturaleza y campo',
-      imgFront: '/assets/verde_frente.png',
-      imgBack: '/assets/verde_atras.png',
+      imgFront: '/assets/verde_frente_webp.webp',
+      imgBack: '/assets/verde_atras_webp.webp',
     },
     {
       id: 'naranja',
       name: 'Naranja Safari',
       hex: '#FB923C',
       tag: 'Energía y sol',
-      imgFront: '/assets/naranja_frente.png',
-      imgBack: '/assets/naranja_atras.png',
+      imgFront: '/assets/naranja_frente_webp.webp',
+      imgBack: '/assets/naranja_atras_webp.webp',
     },
     {
       id: 'morado',
       name: 'Morado Gummy',
       hex: '#A855F7',
       tag: 'Edición GO especial',
-      imgFront: '/assets/morado_frente.png',
-      imgBack: '/assets/morado_atras.png',
+      imgFront: '/assets/morado_frente_webp.webp',
+      imgBack: '/assets/morado_atras_webp.webp',
     },
     {
       id: 'gris',
       name: 'Gris Urbano',
       hex: '#94A3B8',
       tag: 'Elegante y neutral',
-      imgFront: '/assets/gris_frente.png',
-      imgBack: '/assets/gris_atras.png',
+      imgFront: '/assets/gris_frente_webp.webp',
+      imgBack: '/assets/gris_atras_webp.webp',
     },
   ];
 
@@ -103,6 +121,7 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
   const handleSelectColor = (index) => {
     setActiveColorIndex(index);
     setIsHovered(false);
+    setMobileFlipped({});
     if (onColorChange) {
       onColorChange(colorVariants[index].name);
     }
@@ -195,7 +214,7 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
         background: 'linear-gradient(180deg, #64C7F3 0%, #76CFDD 50%, #9CD4D7 100%)'
       }}
     >
-      {/* CAPA: NUBE IZQUIERDA (Ancho 1080px recortada) */}
+      {/* CAPA: NUBE IZQUIERDA (Ancho 540px en móvil, ampliada en PC) */}
       <motion.div 
         animate={{ 
           y: [0, -18, 0],
@@ -206,19 +225,19 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
           repeat: Infinity, 
           ease: "easeInOut" 
         }}
-        className="absolute top-0 sm:top-4 -left-[500px] sm:-left-[560px] md:-left-[620px] lg:-left-[660px] w-[1080px] max-w-none pointer-events-none z-10 opacity-95"
+        className="absolute top-[100px] sm:top-2 md:top-4 -left-[270px] sm:-left-[380px] md:-left-[520px] lg:-left-[720px] xl:-left-[880px] 2xl:-left-[1020px] w-[540px] sm:w-[720px] md:w-[980px] lg:w-[1450px] xl:w-[1750px] 2xl:w-[2000px] max-w-none pointer-events-none z-10 opacity-95"
       >
         <SafeImage
-          src="/assets/nube-izq.png"
+          src="/assets/nube-izq_webp.webp"
           alt="Nube izquierda"
-          className="w-[1080px] max-w-none h-auto drop-shadow-lg"
+          className="w-full h-auto drop-shadow-lg"
           fallback={
-            <div className="w-[1080px] aspect-[16/9] bg-white/90 rounded-full" />
+            <div className="w-full aspect-[16/9] bg-white/90 rounded-full" />
           }
         />
       </motion.div>
 
-      {/* CAPA: NUBE DERECHA (Ancho 1080px recortada, z-index superior z-50) */}
+      {/* CAPA: NUBE DERECHA (Ancho 540px en móvil, top calc(26% + 250px), majestuosa en PC) */}
       <motion.div 
         animate={{ 
           y: [0, 16, 0],
@@ -230,14 +249,14 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
           ease: "easeInOut",
           delay: 0.5
         }}
-        className="absolute top-[34%] sm:top-[38%] md:top-[42%] -right-[500px] sm:-right-[560px] md:-right-[620px] lg:-right-[660px] w-[1080px] max-w-none pointer-events-none z-50 opacity-95"
+        className="absolute top-[calc(26%+250px)] sm:top-[32%] md:top-[36%] lg:top-[30%] xl:top-[28%] -right-[270px] sm:-right-[380px] md:-right-[520px] lg:-right-[720px] xl:-right-[880px] 2xl:-right-[1020px] w-[540px] sm:w-[720px] md:w-[980px] lg:w-[1450px] xl:w-[1750px] 2xl:w-[2000px] max-w-none pointer-events-none z-50 opacity-95"
       >
         <SafeImage
-          src="/assets/nube-der.png"
+          src="/assets/nube-der_webp.webp"
           alt="Nube derecha"
-          className="w-[1080px] max-w-none h-auto drop-shadow-2xl"
+          className="w-full h-auto drop-shadow-2xl"
           fallback={
-            <div className="w-[1080px] aspect-[16/9] bg-white/90 rounded-full" />
+            <div className="w-full aspect-[16/9] bg-white/90 rounded-full" />
           }
         />
       </motion.div>
@@ -248,7 +267,7 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
         className="absolute bottom-0 left-0 right-0 w-full z-[5] pointer-events-none flex items-end justify-center"
       >
         <SafeImage
-          src="/assets/suelo.png"
+          src="/assets/suelo_webp.webp"
           alt="Suelo con rocas, musgo y flores"
           className="w-full min-w-full h-auto drop-shadow-2xl -scale-x-100"
           fallback={
@@ -273,6 +292,9 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
             const isCenter = diff === 0;
             const isSide = Math.abs(diff) === 1;
             const isVisible = Math.abs(diff) <= 1; // SOLO 3 PRODUCTOS VISIBLES
+            const isFlipped = Boolean(mobileFlipped[index]);
+            // En móvil se controla exclusivamente con el botón (isFlipped). En desktop con hover de cursor.
+            const showBack = isMobile ? isFlipped : (isCenter && isHovered);
 
             return (
               <motion.div
@@ -305,10 +327,10 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
                 {/* Contenedor del producto individual */}
                 <motion.div
                   onMouseEnter={() => {
-                    if (isCenter) setIsHovered(true);
+                    if (isCenter && !isMobile) setIsHovered(true);
                   }}
                   onMouseLeave={() => {
-                    if (isCenter) setIsHovered(false);
+                    if (isCenter && !isMobile) setIsHovered(false);
                   }}
                   animate={{
                     y: isCenter ? [0, -12, 0] : 0,
@@ -329,13 +351,32 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
                     !isCenter ? 'cursor-pointer hover:opacity-50 transition-opacity' : 'cursor-grab active:cursor-grabbing'
                   }`}
                 >
-                  {/* Imagen del zapato con vista definitiva de frente y vista posterior en hover */}
+                  {/* Imagen del zapato con vista definitiva de frente y vista posterior en hover / giro móvil */}
                   <div className="relative w-full flex items-center justify-center select-none">
+                    
+                    {/* Botón Girar (Exclusivo para versión móvil: centrado en X y más arriba) */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (!isCenter) {
+                          handleSelectColor(index);
+                        }
+                        toggleMobileFlip(index);
+                      }}
+                      aria-label="Girar zapatilla"
+                      title="Girar zapatilla"
+                      className="sm:hidden absolute -top-7 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md border border-white text-sky-950 font-bubbly text-xs font-bold shadow-md shadow-sky-950/15 active:scale-90 transition-all cursor-pointer whitespace-nowrap"
+                    >
+                      <RotateCw className={`w-3.5 h-3.5 text-sky-600 transition-transform duration-500 ${isFlipped ? 'rotate-180' : ''}`} />
+                      <span>{isFlipped ? 'Frente' : 'Girar'}</span>
+                    </button>
+
                     {/* Imagen 1 (Vista Frente: variant.imgFront) */}
                     <motion.div
                       animate={{
-                        opacity: isCenter && isHovered ? 0 : 1,
-                        scale: isCenter && isHovered ? 0.96 : 1,
+                        opacity: showBack ? 0 : 1,
+                        scale: showBack ? 0.96 : 1,
                       }}
                       transition={{ duration: 0.35, ease: "easeInOut" }}
                       className="w-full flex items-center justify-center"
@@ -356,32 +397,30 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
                       />
                     </motion.div>
 
-                    {/* Imagen 2 (Vista Atrás en Hover: variant.imgBack) */}
-                    {isCenter && (
-                      <motion.div
-                        animate={{
-                          opacity: isHovered ? 1 : 0,
-                          scale: isHovered ? 1 : 0.96,
-                        }}
-                        transition={{ duration: 0.35, ease: "easeInOut" }}
-                        className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none"
-                      >
-                        <SafeImage
-                          src={variant.imgBack}
-                          alt={`Zapatilla GO ${variant.name} - Vista Posterior`}
-                          className="w-full h-auto object-contain"
-                          fallback={
-                            <div className="relative w-full h-full flex items-center justify-center">
-                              <img 
-                                src={variant.imgFront} 
-                                alt="Vista Posterior" 
-                                className="w-full h-auto object-contain scale-x-[-1] brightness-105"
-                              />
-                            </div>
-                          }
-                        />
-                      </motion.div>
-                    )}
+                    {/* Imagen 2 (Vista Atrás en Hover o Giro Móvil: variant.imgBack) */}
+                    <motion.div
+                      animate={{
+                        opacity: showBack ? 1 : 0,
+                        scale: showBack ? 1 : 0.96,
+                      }}
+                      transition={{ duration: 0.35, ease: "easeInOut" }}
+                      className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none"
+                    >
+                      <SafeImage
+                        src={variant.imgBack}
+                        alt={`Zapatilla GO ${variant.name} - Vista Posterior`}
+                        className="w-full h-auto object-contain"
+                        fallback={
+                          <div className="relative w-full h-full flex items-center justify-center">
+                            <img 
+                              src={variant.imgFront} 
+                              alt="Vista Posterior" 
+                              className="w-full h-auto object-contain scale-x-[-1] brightness-105"
+                            />
+                          </div>
+                        }
+                      />
+                    </motion.div>
                   </div>
 
                 </motion.div>

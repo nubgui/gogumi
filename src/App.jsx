@@ -21,8 +21,8 @@ export default function App() {
     size: '21',
     price: 149,
     originalPrice: 189,
-    imgFront: '/assets/azul_frente.png',
-    imgBack: '/assets/azul_atras.png',
+    imgFront: '/assets/azul_frente_webp.webp',
+    imgBack: '/assets/azul_atras_webp.webp',
   });
 
   // 5 Secciones de la Landing Page con Scroll Continuo
@@ -181,7 +181,7 @@ export default function App() {
                     { value: '+300%', label: 'Conexión Sensorial' },
                     { value: 'Grafeno', label: 'Blindaje Abrasivo' },
                   ]}
-                  imageSrc="/assets/beneficio_grafeno.png"
+                  imageSrc="/assets/beneficio_grafeno_webp.webp"
                   imageAlt="Suela de Grafeno 1-2 mm Go Gumi"
                   imageBadgeText="Grafeno Milimétrico"
                   reverse={false}
@@ -211,7 +211,7 @@ export default function App() {
                     { value: 'Arco Activo', label: 'Estimula el Músculo' },
                     { value: '0 Deformidad', label: 'Previene Pie Plano' },
                   ]}
-                  imageSrc="/assets/beneficio_barefoot.png"
+                  imageSrc="/assets/beneficio_barefoot_webp.webp"
                   imageAlt="Horma Barefoot Ergonómica Go Gumi"
                   imageBadgeText="Puntera Anatómica Libre"
                   reverse={true}
@@ -241,7 +241,7 @@ export default function App() {
                     { value: '85 g', label: 'Peso Pluma Ultraligero' },
                     { value: 'BPA Free', label: 'Grado Médico Seguro' },
                   ]}
-                  imageSrc="/assets/beneficio_bioflex.png"
+                  imageSrc="/assets/beneficio_bioflex_webp.webp"
                   imageAlt="Suela Bio-Flex y Agarre 360° Go Gumi"
                   imageBadgeText="Tracción Multidireccional"
                   reverse={false}
