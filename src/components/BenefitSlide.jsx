@@ -32,13 +32,12 @@ export default function BenefitSlide({
 }) {
   const slideRef = useRef(null);
 
-  // Parallax suave sensible al scroll
+  // Parallax suave sensible al scroll en el contenido de texto
   const { scrollYProgress } = useScroll({
     target: slideRef,
     offset: ['start end', 'end start'],
   });
 
-  const imageParallaxY = useTransform(scrollYProgress, [0, 1], [-22, 22]);
   const textParallaxY = useTransform(scrollYProgress, [0, 1], [12, -12]);
 
   // Configuración de temas visuales minimalistas y dinámicos
@@ -233,7 +232,6 @@ export default function BenefitSlide({
               ========================================================================= */}
           <div className={`lg:col-span-6 flex justify-center items-center ${reverse ? 'lg:order-1' : 'lg:order-2'}`}>
             <motion.div
-              style={{ y: imageParallaxY }}
               initial={{ opacity: 0, scale: 0.94 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
