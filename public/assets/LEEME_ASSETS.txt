@@ -1,0 +1,34 @@
+GUÍA DE IMÁGENES LOCALES PARA LA LANDING PAGE "GO"
+=====================================================
+
+Para que tus elementos individuales de Illustrator se vean reflejados en tiempo real
+con la animación por capas y 3D Parallax, simplemente exporta desde Illustrator
+en formato PNG transparente con los siguientes nombres en esta misma carpeta:
+
+1. ZAPATILLAS DEFINITIVAS POR COLOR Y DIRECCIÓN ([color]_[dirección].png):
+   • Azul:    azul_frente.png    y  azul_atras.png
+   • Rosa:    rosa_frente.png    y  rosa_atras.png
+   • Verde:   verde_frente.png   y  verde_atras.png
+   • Naranja: naranja_frente.png y  naranja_atras.png
+   • Morado:  morado_frente.png  y  morado_atras.png
+   • Gris:    gris_frente.png    y  gris_atras.png
+   * El carrusel muestra la vista '_frente' y en hover hace crossfade suave a '_atras'.
+
+2. suelo.png
+   -> Tu terreno recortado (con las rocas, flores amarillas y musgo).
+
+3. nube-izq.png
+   -> Tu nube izquierda sin fondo.
+
+4. nube-der.png
+   -> Tu nube derecha sin fondo.
+
+5. logo-go.png
+   -> Tu logo "GO" 3D con alas (en el centro del Navbar).
+
+-----------------------------------------------------
+NOTA: 
+Si aún no has colocado alguno de estos archivos, el sistema cuenta con
+respaldos visuales estilizados automáticos para que el proyecto siempre se
+vea hermoso y nunca muestre enlaces rotos.
+-----------------------------------------------------
