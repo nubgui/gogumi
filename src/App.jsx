@@ -19,6 +19,7 @@ export default function App() {
     color: 'Azul Océano',
     colorHex: '#3B82F6',
     size: '21',
+    quantity: 1,
     price: 149,
     originalPrice: 189,
     imgFront: '/assets/azul_frente_webp.webp',

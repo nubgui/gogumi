@@ -14,7 +14,9 @@ import {
   Star,
   ChevronRight,
   Info,
-  X
+  X,
+  Plus,
+  Minus
 } from 'lucide-react';
 import SafeImage from './SafeImage';
 
@@ -93,6 +95,7 @@ export default function ProductPage({
 
   const [selectedSize, setSelectedSize] = useState('21');
   const [selectedStageTab, setSelectedStageTab] = useState('1-2'); // '1-2' | '3-5'
+  const [quantity, setQuantity] = useState(1);
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false); // Modal de los 3 beneficios
 
   // 3 Diferenciadores oficiales de Gogumi con colores distintivos
@@ -138,6 +141,7 @@ export default function ProductPage({
         color: currentColor.name,
         colorHex: currentColor.hex,
         size: selectedSize,
+        quantity: quantity,
         price: 149,
         originalPrice: 189,
         imgFront: currentColor.imgFront,
@@ -316,15 +320,20 @@ export default function ProductPage({
                 {/* Precios */}
                 <div className="flex items-baseline gap-3 mt-2">
                   <span className="font-bubbly text-3xl sm:text-4xl font-black text-white drop-shadow-md">
-                    S/ 149.00
+                    S/ {(149 * quantity).toFixed(2)}
                   </span>
                   <span className="text-base sm:text-lg text-white/70 line-through font-semibold">
-                    S/ 189.00
+                    S/ {(189 * quantity).toFixed(2)}
                   </span>
                   <span className="px-2 py-0.5 rounded-md bg-emerald-500/80 text-white text-xs font-bold shadow-sm">
-                    Ahorras S/ 40
+                    Ahorras S/ {40 * quantity}
                   </span>
                 </div>
+                {quantity > 1 && (
+                  <p className="text-[11px] text-white/85 font-medium mt-1">
+                    (S/ 149.00 c/u × {quantity} pares)
+                  </p>
+                )}
               </div>
 
               {/* SELECTOR DE COLOR */}
@@ -419,6 +428,49 @@ export default function ProductPage({
                 </div>
               </div>
 
+              {/* SELECTOR DE CANTIDAD */}
+              <div className="mt-4 pt-4 border-t border-white/30">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-xs font-bold text-white drop-shadow-sm block">
+                      Cantidad:
+                    </span>
+                    <span className="text-[11px] text-white/80">
+                      {quantity} {quantity === 1 ? 'par seleccionado' : 'pares seleccionados'}
+                    </span>
+                  </div>
+
+                  {/* Controles de incremento / decremento */}
+                  <div className="flex items-center gap-2.5 bg-white/20 backdrop-blur-md border border-white/50 rounded-2xl p-1 shadow-inner">
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+                      disabled={quantity <= 1}
+                      className="w-8 h-8 rounded-xl bg-white/30 hover:bg-white text-white hover:text-sky-950 font-bold flex items-center justify-center transition-all disabled:opacity-30 disabled:hover:bg-white/30 disabled:hover:text-white disabled:cursor-not-allowed cursor-pointer shadow-xs active:scale-95"
+                      aria-label="Disminuir cantidad"
+                      title="Quitar un par"
+                    >
+                      <Minus className="w-4 h-4 stroke-[3]" />
+                    </button>
+
+                    <span className="font-bubbly text-base font-extrabold text-white min-w-7 text-center select-none">
+                      {quantity}
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => setQuantity((prev) => Math.min(10, prev + 1))}
+                      disabled={quantity >= 10}
+                      className="w-8 h-8 rounded-xl bg-white/30 hover:bg-white text-white hover:text-sky-950 font-bold flex items-center justify-center transition-all disabled:opacity-30 disabled:hover:bg-white/30 disabled:hover:text-white disabled:cursor-not-allowed cursor-pointer shadow-xs active:scale-95"
+                      aria-label="Aumentar cantidad"
+                      title="Agregar otro par"
+                    >
+                      <Plus className="w-4 h-4 stroke-[3]" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               {/* BOTÓN LLAMATIVO DE COMPRAR */}
               <div className="mt-5">
                 <motion.button
@@ -431,7 +483,9 @@ export default function ProductPage({
                   className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-yellow-300 via-amber-300 to-orange-400 hover:from-yellow-200 hover:to-orange-300 text-sky-950 font-bubbly text-base sm:text-lg font-black tracking-wide uppercase shadow-xl shadow-sky-950/20 flex items-center justify-center gap-3 transition-all cursor-pointer border-2 border-white/80"
                 >
                   <ShoppingBag className="w-5 h-5 stroke-[2.5]" />
-                  <span>COMPRAR AHORA — S/ 149.00</span>
+                  <span>
+                    COMPRAR {quantity > 1 ? `(${quantity})` : ''} — S/ {(149 * quantity).toFixed(2)}
+                  </span>
                 </motion.button>
 
                 <p className="text-center text-[10px] text-white/80 mt-2 font-medium">

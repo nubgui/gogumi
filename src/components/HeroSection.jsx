@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { Sparkles, Check, Layers, Footprints, Zap, X, RotateCw } from 'lucide-react';
 import SafeImage from './SafeImage';
@@ -28,6 +28,8 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
 
   // Carrusel de Colores
   const [activeColorIndex, setActiveColorIndex] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const isDraggingRef = useRef(false);
 
   // Espaciado horizontal responsivo entre zapatos
   // Espaciado horizontal responsivo: distribuye los 3 zapatos abarcando el 90% de la pantalla
@@ -159,6 +161,7 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
   const rotateY = useSpring(useTransform(mouseX, [-300, 300], [-12, 12]), springConfig);
 
   const handleMouseMove = (e) => {
+    if (isDraggingRef.current) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
@@ -279,154 +282,190 @@ export default function HeroSection({ onReserveClick, onColorChange, onProductCl
       {/* CAPA CENTRAL: CARRUSEL EXACTAMENTE CENTRADO (Muestra solo 3 productos: centro 100%, laterales 30%) */}
       <div className="relative flex-1 flex flex-col items-center justify-center w-full z-20 my-auto overflow-visible">
         
-        {/* ESCENARIO DEL CARRUSEL (Centrado 100% en la pantalla) */}
-        <div className="relative w-full max-w-7xl mx-auto h-[320px] sm:h-[380px] flex items-center justify-center">
+        {/* ESCENARIO DEL CARRUSEL (Centrado 100% en la pantalla, con soporte Drag en Móvil y PC) */}
+        <div className="relative w-full max-w-7xl mx-auto flex items-center justify-center">
           
-          {colorVariants.map((variant, index) => {
-            // Cálculo de distancia modular circular relativa al activo (loop infinito en ambas direcciones)
-            const total = colorVariants.length;
-            let diff = (index - activeColorIndex) % total;
-            if (diff < -Math.floor(total / 2)) diff += total;
-            if (diff > Math.floor(total / 2)) diff -= total;
+          {/* Track Draggable del Carrusel: Funciona en Móvil (Touch) y PC (Mouse Drag) */}
+          <motion.div
+            drag="x"
+            dragDirectionLock
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.22}
+            dragTransition={{ bounceStiffness: 300, bounceDamping: 28 }}
+            onDragStart={() => {
+              isDraggingRef.current = true;
+              setIsDragging(true);
+              mouseX.set(0);
+              mouseY.set(0);
+              setIsHovered(false);
+            }}
+            onDragEnd={(event, info) => {
+              const offsetThreshold = 40;
+              const velocityThreshold = 220;
+              if (info.offset.x < -offsetThreshold || info.velocity.x < -velocityThreshold) {
+                handleNext();
+              } else if (info.offset.x > offsetThreshold || info.velocity.x > velocityThreshold) {
+                handlePrev();
+              }
+              setTimeout(() => {
+                isDraggingRef.current = false;
+                setIsDragging(false);
+              }, 100);
+            }}
+            className={`relative w-full h-[320px] sm:h-[380px] flex items-center justify-center select-none touch-pan-y ${
+              isDragging ? 'cursor-grabbing' : 'cursor-grab'
+            }`}
+            style={{ touchAction: 'pan-y' }}
+          >
+            {colorVariants.map((variant, index) => {
+              // Cálculo de distancia modular circular relativa al activo (loop infinito en ambas direcciones)
+              const total = colorVariants.length;
+              let diff = (index - activeColorIndex) % total;
+              if (diff < -Math.floor(total / 2)) diff += total;
+              if (diff > Math.floor(total / 2)) diff -= total;
 
-            const isCenter = diff === 0;
-            const isSide = Math.abs(diff) === 1;
-            const isVisible = Math.abs(diff) <= 1; // SOLO 3 PRODUCTOS VISIBLES
-            const isFlipped = Boolean(mobileFlipped[index]);
-            // En móvil se controla exclusivamente con el botón (isFlipped). En desktop con hover de cursor.
-            const showBack = isMobile ? isFlipped : (isCenter && isHovered);
+              const isCenter = diff === 0;
+              const isSide = Math.abs(diff) === 1;
+              const isVisible = Math.abs(diff) <= 1; // SOLO 3 PRODUCTOS VISIBLES
+              const isFlipped = Boolean(mobileFlipped[index]);
+              // En móvil se controla exclusivamente con el botón (isFlipped). En desktop con hover de cursor.
+              const showBack = isMobile ? isFlipped : (isCenter && isHovered && !isDragging);
 
-            return (
-              <motion.div
-                key={variant.id}
-                className="absolute flex items-center justify-center"
-                animate={{
-                  x: diff * spacing,
-                  scale: isCenter ? 1 : 0.65,
-                  opacity: isCenter ? 1 : isSide ? 0.3 : 0,
-                  zIndex: isCenter ? 25 : isSide ? 15 : 0,
-                }}
-                transition={{
-                  type: "spring",
-                  stiffness: 240,
-                  damping: 26,
-                  mass: 0.8,
-                }}
-                style={{
-                  pointerEvents: isVisible ? 'auto' : 'none',
-                  perspective: 1000,
-                }}
-                onClick={() => {
-                  if (!isCenter) {
-                    handleSelectColor(index);
-                  } else if (onProductClick) {
-                    onProductClick(variant.name);
-                  }
-                }}
-              >
-                {/* Contenedor del producto individual */}
+              return (
                 <motion.div
-                  onMouseEnter={() => {
-                    if (isCenter && !isMobile) setIsHovered(true);
-                  }}
-                  onMouseLeave={() => {
-                    if (isCenter && !isMobile) setIsHovered(false);
-                  }}
+                  key={variant.id}
+                  className="absolute flex items-center justify-center"
                   animate={{
-                    y: isCenter ? [0, -12, 0] : 0,
+                    x: diff * spacing,
+                    scale: isCenter ? 1 : 0.65,
+                    opacity: isCenter ? 1 : isSide ? 0.3 : 0,
+                    zIndex: isCenter ? 25 : isSide ? 15 : 0,
                   }}
                   transition={{
-                    y: isCenter ? { duration: 4.5, repeat: Infinity, ease: "easeInOut" } : { duration: 0.3 }
+                    type: "spring",
+                    stiffness: 240,
+                    damping: 26,
+                    mass: 0.8,
                   }}
-                  style={
-                    isCenter
-                      ? {
-                          rotateX,
-                          rotateY,
-                          transformStyle: "preserve-3d",
-                        }
-                      : {}
-                  }
-                  className={`relative flex items-center justify-center w-[300px] sm:w-[380px] md:w-[420px] ${
-                    !isCenter ? 'cursor-pointer hover:opacity-50 transition-opacity' : 'cursor-grab active:cursor-grabbing'
-                  }`}
+                  style={{
+                    pointerEvents: isVisible ? 'auto' : 'none',
+                    perspective: 1000,
+                  }}
+                  onClick={() => {
+                    if (isDraggingRef.current) return;
+                    if (!isCenter) {
+                      handleSelectColor(index);
+                    } else if (onProductClick) {
+                      onProductClick(variant.name);
+                    }
+                  }}
                 >
-                  {/* Imagen del zapato con vista definitiva de frente y vista posterior en hover / giro móvil */}
-                  <div className="relative w-full flex items-center justify-center select-none">
-                    
-                    {/* Botón Girar (Exclusivo para versión móvil: centrado en X y más arriba) */}
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (!isCenter) {
-                          handleSelectColor(index);
-                        }
-                        toggleMobileFlip(index);
-                      }}
-                      aria-label="Girar zapatilla"
-                      title="Girar zapatilla"
-                      className="sm:hidden absolute -top-7 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md border border-white text-sky-950 font-bubbly text-xs font-bold shadow-md shadow-sky-950/15 active:scale-90 transition-all cursor-pointer whitespace-nowrap"
-                    >
-                      <RotateCw className={`w-3.5 h-3.5 text-sky-600 transition-transform duration-500 ${isFlipped ? 'rotate-180' : ''}`} />
-                      <span>{isFlipped ? 'Frente' : 'Girar'}</span>
-                    </button>
+                  {/* Contenedor del producto individual */}
+                  <motion.div
+                    onMouseEnter={() => {
+                      if (isCenter && !isMobile && !isDraggingRef.current) setIsHovered(true);
+                    }}
+                    onMouseLeave={() => {
+                      if (isCenter && !isMobile) setIsHovered(false);
+                    }}
+                    animate={{
+                      y: isCenter ? [0, -12, 0] : 0,
+                    }}
+                    transition={{
+                      y: isCenter ? { duration: 4.5, repeat: Infinity, ease: "easeInOut" } : { duration: 0.3 }
+                    }}
+                    style={
+                      isCenter
+                        ? {
+                            rotateX,
+                            rotateY,
+                            transformStyle: "preserve-3d",
+                          }
+                        : {}
+                    }
+                    className={`relative flex items-center justify-center w-[300px] sm:w-[380px] md:w-[420px] ${
+                      !isCenter ? 'cursor-pointer hover:opacity-50 transition-opacity' : 'cursor-grab active:cursor-grabbing'
+                    }`}
+                  >
+                    {/* Imagen del zapato con vista definitiva de frente y vista posterior en hover / giro móvil */}
+                    <div className="relative w-full flex items-center justify-center select-none pointer-events-none">
+                      
+                      {/* Botón Girar (Exclusivo para versión móvil: centrado en X y más arriba) */}
+                      <button
+                        type="button"
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (isDraggingRef.current) return;
+                          if (!isCenter) {
+                            handleSelectColor(index);
+                          }
+                          toggleMobileFlip(index);
+                        }}
+                        aria-label="Girar zapatilla"
+                        title="Girar zapatilla"
+                        className="sm:hidden absolute -top-7 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md border border-white text-sky-950 font-bubbly text-xs font-bold shadow-md shadow-sky-950/15 active:scale-90 transition-all cursor-pointer whitespace-nowrap pointer-events-auto"
+                      >
+                        <RotateCw className={`w-3.5 h-3.5 text-sky-600 transition-transform duration-500 ${isFlipped ? 'rotate-180' : ''}`} />
+                        <span>{isFlipped ? 'Frente' : 'Girar'}</span>
+                      </button>
 
-                    {/* Imagen 1 (Vista Frente: variant.imgFront) */}
-                    <motion.div
-                      animate={{
-                        opacity: showBack ? 0 : 1,
-                        scale: showBack ? 0.96 : 1,
-                      }}
-                      transition={{ duration: 0.35, ease: "easeInOut" }}
-                      className="w-full flex items-center justify-center"
-                    >
-                      <SafeImage
-                        src={variant.imgFront}
-                        alt={`Zapatilla GO ${variant.name} - Frente`}
-                        className="w-full h-auto object-contain"
-                        fallback={
-                          <div className="relative w-full aspect-[4/3] flex items-center justify-center">
-                            <img 
-                              src="/assets/design-reference.png" 
-                              alt="Referencia de diseño" 
-                              className="w-full h-auto object-contain rounded-2xl shadow-2xl"
-                            />
-                          </div>
-                        }
-                      />
-                    </motion.div>
+                      {/* Imagen 1 (Vista Frente: variant.imgFront) */}
+                      <motion.div
+                        animate={{
+                          opacity: showBack ? 0 : 1,
+                          scale: showBack ? 0.96 : 1,
+                        }}
+                        transition={{ duration: 0.35, ease: "easeInOut" }}
+                        className="w-full flex items-center justify-center"
+                      >
+                        <SafeImage
+                          src={variant.imgFront}
+                          alt={`Zapatilla GO ${variant.name} - Frente`}
+                          className="w-full h-auto object-contain pointer-events-none"
+                          fallback={
+                            <div className="relative w-full aspect-[4/3] flex items-center justify-center">
+                              <img 
+                                src="/assets/design-reference.png" 
+                                alt="Referencia de diseño" 
+                                className="w-full h-auto object-contain rounded-2xl shadow-2xl pointer-events-none"
+                              />
+                            </div>
+                          }
+                        />
+                      </motion.div>
 
-                    {/* Imagen 2 (Vista Atrás en Hover o Giro Móvil: variant.imgBack) */}
-                    <motion.div
-                      animate={{
-                        opacity: showBack ? 1 : 0,
-                        scale: showBack ? 1 : 0.96,
-                      }}
-                      transition={{ duration: 0.35, ease: "easeInOut" }}
-                      className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none"
-                    >
-                      <SafeImage
-                        src={variant.imgBack}
-                        alt={`Zapatilla GO ${variant.name} - Vista Posterior`}
-                        className="w-full h-auto object-contain"
-                        fallback={
-                          <div className="relative w-full h-full flex items-center justify-center">
-                            <img 
-                              src={variant.imgFront} 
-                              alt="Vista Posterior" 
-                              className="w-full h-auto object-contain scale-x-[-1] brightness-105"
-                            />
-                          </div>
-                        }
-                      />
-                    </motion.div>
-                  </div>
+                      {/* Imagen 2 (Vista Atrás en Hover o Giro Móvil: variant.imgBack) */}
+                      <motion.div
+                        animate={{
+                          opacity: showBack ? 1 : 0,
+                          scale: showBack ? 1 : 0.96,
+                        }}
+                        transition={{ duration: 0.35, ease: "easeInOut" }}
+                        className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none"
+                      >
+                        <SafeImage
+                          src={variant.imgBack}
+                          alt={`Zapatilla GO ${variant.name} - Vista Posterior`}
+                          className="w-full h-auto object-contain pointer-events-none"
+                          fallback={
+                            <div className="relative w-full h-full flex items-center justify-center">
+                              <img 
+                                src={variant.imgFront} 
+                                alt="Vista Posterior" 
+                                className="w-full h-auto object-contain scale-x-[-1] brightness-105 pointer-events-none"
+                              />
+                            </div>
+                          }
+                        />
+                      </motion.div>
+                    </div>
 
+                  </motion.div>
                 </motion.div>
-              </motion.div>
-            );
-          })}
+              );
+            })}
+          </motion.div>
 
         </div>
 

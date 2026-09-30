@@ -14,7 +14,9 @@ import {
   ChevronRight,
   ShoppingBag,
   Sparkles,
-  Info
+  Info,
+  Plus,
+  Minus
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import SafeImage from './SafeImage';
@@ -24,6 +26,7 @@ export default function CheckoutPage({
     color: 'Azul Océano',
     colorHex: '#3B82F6',
     size: '21',
+    quantity: 1,
     price: 149,
     originalPrice: 189,
     imgFront: '/assets/azul_frente_webp.webp',
@@ -31,6 +34,14 @@ export default function CheckoutPage({
   onBack,
   onFinish
 }) {
+  const [quantity, setQuantity] = useState(orderItem.quantity || 1);
+
+  // Sincronizar cantidad si se actualiza orderItem desde la página de producto
+  React.useEffect(() => {
+    if (orderItem.quantity) {
+      setQuantity(orderItem.quantity);
+    }
+  }, [orderItem.quantity]);
   // Datos del formulario
   const [formData, setFormData] = useState({
     email: '',
@@ -61,11 +72,12 @@ export default function CheckoutPage({
   const [isSuccess, setIsSuccess] = useState(false);
   const [orderNumber] = useState(() => 'GO-' + Math.floor(100000 + Math.random() * 900000));
 
-  // Cálculos de precios
-  const basePrice = orderItem.price || 149;
+  // Cálculos de precios con cantidades
+  const unitPrice = orderItem.price || 149;
+  const subtotal = unitPrice * quantity;
   const shippingCost = formData.shippingMethod === 'express' ? 15 : 0;
-  const discountAmount = appliedDiscount > 0 ? (basePrice * appliedDiscount) : 0;
-  const finalTotal = (basePrice - discountAmount + shippingCost).toFixed(2);
+  const discountAmount = appliedDiscount > 0 ? (subtotal * appliedDiscount) : 0;
+  const finalTotal = (subtotal - discountAmount + shippingCost).toFixed(2);
 
   const handleApplyCoupon = (e) => {
     e.preventDefault();
@@ -181,6 +193,10 @@ export default function CheckoutPage({
                   <div className="flex justify-between">
                     <span className="text-slate-500">Color y Talla:</span>
                     <span className="font-bold text-slate-800">{orderItem.color} • Talla {orderItem.size}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Cantidad:</span>
+                    <span className="font-bold text-slate-800">{quantity} {quantity === 1 ? 'par' : 'pares'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Monto Pagado:</span>
@@ -559,8 +575,8 @@ export default function CheckoutPage({
                     alt={orderItem.color}
                     className="w-full h-full object-contain"
                   />
-                  <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-sky-950 text-white rounded-full text-[10px] font-bold flex items-center justify-center shadow-md">
-                    1
+                  <span className="absolute -top-1.5 -right-1.5 min-w-5 h-5 px-1 bg-sky-950 text-white rounded-full text-[10px] font-bold flex items-center justify-center shadow-md">
+                    {quantity}
                   </span>
                 </div>
 
@@ -574,14 +590,44 @@ export default function CheckoutPage({
                   <p className="text-xs text-white/90 font-medium">
                     Talla: <strong>{orderItem.size}</strong> ({orderItem.size <= 21 ? '1 a 2 años' : '3 a 5 años'})
                   </p>
+
+                  {/* Selector rápido de cantidad en checkout */}
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-[11px] text-white/80 font-medium">Cant:</span>
+                    <div className="flex items-center gap-1 bg-white/20 backdrop-blur-xs rounded-xl p-0.5 border border-white/40">
+                      <button
+                        type="button"
+                        onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
+                        disabled={quantity <= 1}
+                        className="w-5 h-5 rounded-lg bg-white/30 hover:bg-white text-white hover:text-sky-950 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-all"
+                        aria-label="Restar par"
+                        title="Quitar un par"
+                      >
+                        <Minus className="w-3 h-3 stroke-[3]" />
+                      </button>
+                      <span className="text-xs font-black text-white px-1.5 min-w-4 text-center select-none">
+                        {quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setQuantity(prev => Math.min(10, prev + 1))}
+                        disabled={quantity >= 10}
+                        className="w-5 h-5 rounded-lg bg-white/30 hover:bg-white text-white hover:text-sky-950 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer transition-all"
+                        aria-label="Sumar par"
+                        title="Agregar otro par"
+                      >
+                        <Plus className="w-3 h-3 stroke-[3]" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="text-right">
                   <span className="font-bubbly text-base font-bold text-white drop-shadow-sm">
-                    S/ {basePrice.toFixed(2)}
+                    S/ {subtotal.toFixed(2)}
                   </span>
-                  <span className="block text-[10px] text-white/70 line-through">
-                    S/ {orderItem.originalPrice || 189}.00
+                  <span className="block text-[10px] text-white/80">
+                    {quantity > 1 ? `${quantity} × S/ ${unitPrice}` : `S/ ${orderItem.originalPrice || 189}.00`}
                   </span>
                 </div>
               </div>
@@ -617,13 +663,13 @@ export default function CheckoutPage({
               {/* DESGLOSE DE PRECIOS */}
               <div className="space-y-2 pt-3 border-t border-white/30 text-xs text-white/95">
                 <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span className="font-semibold">S/ {basePrice.toFixed(2)}</span>
+                  <span>Subtotal ({quantity} {quantity === 1 ? 'par' : 'pares'})</span>
+                  <span className="font-semibold">S/ {subtotal.toFixed(2)}</span>
                 </div>
 
                 {appliedDiscount > 0 && (
                   <div className="flex justify-between text-emerald-200 font-bold">
-                    <span>Descuento aplicado (15% OFF)</span>
+                    <span>Descuento aplicado ({Math.round(appliedDiscount * 100)}% OFF)</span>
                     <span>-S/ {discountAmount.toFixed(2)}</span>
                   </div>
                 )}
