@@ -14,6 +14,7 @@ import { updateSEO } from './utils/seo';
 // Reduce el bundle inicial descargado por el navegador en más del 50%, acelerando LCP y TTI
 const ProductPage = lazy(() => import('./components/ProductPage'));
 const CheckoutPage = lazy(() => import('./components/CheckoutPage'));
+const CampaignLandingPage = lazy(() => import('./components/CampaignLandingPage'));
 
 export default function App() {
   // Detección inicial de la vista según la URL (pathname o hash)
@@ -21,6 +22,9 @@ export default function App() {
     if (typeof window === 'undefined') return 'home';
     const path = window.location.pathname;
     const hash = window.location.hash;
+    if (path.includes('preventa') || path.includes('promocion') || hash === '#preventa') {
+      return 'campaign';
+    }
     if (path.includes('zapatillas-bebe') || path.includes('producto') || hash === '#product') {
       return 'product';
     }
@@ -71,22 +75,33 @@ export default function App() {
     }
     setCurrentView(view);
 
-    if (view === 'product') {
-      window.history.pushState(null, '', '/zapatillas-bebe-ergonomicas');
+    // Detectar si el sitio está corriendo en un subdirectorio como /go_gumi en GitHub Pages
+    const isGitHubSubfolder = window.location.pathname.startsWith('/go_gumi');
+    const prefix = isGitHubSubfolder ? '/go_gumi' : '';
+
+    if (view === 'campaign') {
+      window.history.pushState(null, '', `${prefix}/preventa-primeros-pasos`);
+      updateSEO({
+        title: 'Zapatos Ergonómicos Bebé | 20% OFF Preventa | Go Gumi',
+        description: 'Oferta exclusiva de preventa: 20% de descuento en zapatillas ergonómicas Go Gumi para bebés de 1 a 5 años. Horma barefoot y suela de grafeno. Envíos Perú.',
+        canonical: 'https://gogumi.pe/preventa-primeros-pasos',
+      });
+    } else if (view === 'product') {
+      window.history.pushState(null, '', `${prefix}/zapatillas-bebe-ergonomicas`);
       updateSEO({
         title: 'Zapatillas de Bebé Ergonómicas Go Gumi | Tallas 19 a 25',
         description: 'Comprar zapatillas de bebé ergonómicas con horma ancha y puntera barefoot. Ideales para niños y niñas de 1 a 5 años. Envíos rápidos a todo el Perú.',
         canonical: 'https://gogumi.pe/zapatillas-bebe-ergonomicas',
       });
     } else if (view === 'checkout') {
-      window.history.pushState(null, '', '/checkout');
+      window.history.pushState(null, '', `${prefix}/checkout`);
       updateSEO({
         title: 'Finalizar Pedido | Zapatillas Go Gumi Perú',
         description: 'Finaliza tu compra de calzado ergonómico Go Gumi con envío seguro a todo el Perú.',
         canonical: 'https://gogumi.pe/checkout',
       });
     } else {
-      window.history.pushState(null, '', '/');
+      window.history.pushState(null, '', prefix ? `${prefix}/` : '/');
       updateSEO({
         title: 'Zapatos para Bebé y Zapatillas Ergonómicas | Go Gumi Minimox',
         description: 'Calzado respetuoso y zapatos para bebé con suela de grafeno 1-2 mm y puntera barefoot. Diseñados para aprender a caminar con libertad. Envíos a todo el Perú.',
@@ -103,7 +118,14 @@ export default function App() {
       const path = window.location.pathname;
       const hash = window.location.hash;
 
-      if (path.includes('zapatillas-bebe') || path.includes('producto') || hash === '#product') {
+      if (path.includes('preventa') || path.includes('promocion') || hash === '#preventa') {
+        setCurrentView('campaign');
+        updateSEO({
+          title: 'Zapatos Ergonómicos Bebé | 20% OFF Preventa | Go Gumi',
+          description: 'Oferta exclusiva de preventa: 20% de descuento en zapatillas ergonómicas Go Gumi para bebés de 1 a 5 años. Horma barefoot y suela de grafeno. Envíos Perú.',
+          canonical: 'https://gogumi.pe/preventa-primeros-pasos',
+        });
+      } else if (path.includes('zapatillas-bebe') || path.includes('producto') || hash === '#product') {
         setCurrentView('product');
         updateSEO({
           title: 'Zapatillas de Bebé Ergonómicas Go Gumi | Tallas 19 a 25',
@@ -390,6 +412,32 @@ export default function App() {
                 orderItem={checkoutItem}
                 onBack={() => navigateTo('product')}
                 onFinish={() => navigateTo('home')}
+              />
+            </motion.div>
+          </Suspense>
+        )}
+
+        {/* VISTA 4: LANDING PAGE DEDICADA DE CAMPAÑA SEM CON SLUG '/preventa-primeros-pasos' */}
+        {currentView === 'campaign' && (
+          <Suspense fallback={
+            <div className="w-full min-h-screen flex items-center justify-center bg-[#FAFAF5]">
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
+                <span className="font-bubbly text-xs font-bold text-slate-700">Cargando oferta de preventa 20% OFF...</span>
+              </div>
+            </div>
+          }>
+            <motion.div
+              key="campaign-view"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.35, ease: "easeOut" }}
+              className="w-full min-h-screen"
+            >
+              <CampaignLandingPage 
+                onBuyNow={(item) => navigateTo('checkout', item)}
+                onGoHome={() => navigateTo('home')}
               />
             </motion.div>
           </Suspense>
